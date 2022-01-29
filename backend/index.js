@@ -4,10 +4,11 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import authRouter from "./routes/authRouter.js";
 import cors from "cors";
+import loader from "./loaders/databaseLoader.js";
 
-async function main() {
-  await mongoose.connect("mongodb://localhost:27017/chat");
-  console.log("Database Connected.");
+try {
+  await loader({ url: "mongodb://localhost:27017/chat" });
+  console.log("Database Connection Established");
 
   const app = express();
 
@@ -30,6 +31,7 @@ async function main() {
     },
   });
 
+
   ws.on("connect", (socket) => {
     console.log(`Client ${socket.id} connected`);
   });
@@ -38,6 +40,6 @@ async function main() {
   server.listen(PORT, () => {
     console.log("Backend Server Started");
   });
+} catch (err) {
+  console.error(err);
 }
-
-main().catch((err) => console.log(err));
