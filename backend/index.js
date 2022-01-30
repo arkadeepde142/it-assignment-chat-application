@@ -1,12 +1,14 @@
 import express from "express";
 import http from "node:http";
+import * as db from "./models/index.js";
 import { Server } from "socket.io";
-import mongoose from "mongoose";
 import authRouter from "./routes/authRouter.js";
 import cors from "cors";
 import loader from "./loaders/databaseLoader.js";
 import notifier from "./utils/NotificationStore.js";
-import * as RoomController from './controllers/RoomController.js';
+import {AuthService} from "./services/index.js"
+import { AuthController, RoomController } from "./controllers/index.js"; 
+
 
 
 try {
@@ -17,7 +19,7 @@ try {
 
   app.use(
     cors({
-      origin: "http://127.0.0.1:3000",
+      origin: "http://localhost:3000",
       credentials: true,
       optionsSuccessStatus: 200,
     })
@@ -33,7 +35,9 @@ try {
       credentials: true,
     },
   });
-
+  // const res= await AuthService.login("arpannandi12@gmail.com","12345678");
+  // console.log(res)
+  // await 
   ws.on("connect", (socket) => {
     console.log(`Client ${socket.id} connected`);
     socket.join("roomid");
@@ -44,9 +48,7 @@ try {
       console.log(`Client ${socket.id} disconnected`);
     });
 
-    socket.on("login", (payload) => {
-      notifier.addSocket(payload.email, socket);
-    });
+    socket.on("login", AuthController.login(socket));
     socket.on("room:join", async (room) => {});
     socket.on("room:create", RoomController.createRoom);
     socket.on("room:leave", async (roomID) => {});

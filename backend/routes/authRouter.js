@@ -1,10 +1,8 @@
 import { Router } from "express";
-import EventEmitter from "events";
+import {AuthController} from "../controllers/index.js"
 
 const authRouter = Router();
 
-authRouter.get("/", async (req, res) => {
-  res.json({ message: "Hello" });
-});
+authRouter.post("/", AuthController.signup);
 
 export default authRouter;
