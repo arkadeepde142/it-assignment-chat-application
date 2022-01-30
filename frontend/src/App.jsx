@@ -1,5 +1,3 @@
-import logo from "./logo.svg";
-import "./App.css";
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
 import Messages from "./components/Messages";
@@ -13,7 +11,7 @@ function App() {
     });
     setSocket(newSocket);
     const connectHandler = (s) => {
-      console.log('Connected');
+      console.log("Connected");
     };
     newSocket.on("connect", connectHandler);
 
@@ -24,28 +22,18 @@ function App() {
   }, [setSocket]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
+    <>
+      <header>
+        <h2>Chat</h2>
+      </header>
+      <main>
         {socket ? (
           <Messages socket={socket}></Messages>
         ) : (
           <div>Not connected :(</div>
         )}
-        <p></p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      </main>
+    </>
   );
 }
 
