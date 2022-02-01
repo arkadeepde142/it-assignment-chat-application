@@ -3,6 +3,7 @@ import http from "node:http";
 import * as db from "./models/index.js";
 import { Server } from "socket.io";
 import authRouter from "./routes/authRouter.js";
+import roomRouter from "./routes/roomRouter.js";
 import cors from "cors";
 import loader from "./loaders/databaseLoader.js";
 import notifier from "./utils/NotificationStore.js";
@@ -27,6 +28,7 @@ try {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use("/auth", authRouter);
+  app.use("/room", roomRouter);
 
   const server = http.createServer(app);
   const ws = new Server(server, {
@@ -40,14 +42,10 @@ try {
   // await 
   ws.on("connect", (socket) => {
     console.log(`Client ${socket.id} connected`);
-    socket.join("roomid");
-    socket.join("");
-    socket.emit("message", "Hello from Server");
     socket.once("disconnect", async () => {
       notifier.removeSocket(socket);
       console.log(`Client ${socket.id} disconnected`);
     });
-
     socket.on("login", AuthController.login(socket));
     socket.on("room:join", async (room) => {});
     socket.on("room:create", RoomController.createRoom);

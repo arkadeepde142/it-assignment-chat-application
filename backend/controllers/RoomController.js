@@ -1,8 +1,15 @@
 import * as Service from '../services/index.js';
 //C
-async function createRoom(payload) {
-  const { roomName, userList } = payload;
-  await Service.RoomService.createRoom(roomName, userList);
+async function createRoom(req, res) {
+  const { roomName, userList } = req.body;
+  const room = await Service.RoomService.createRoom(roomName, userList);
+  return res.status(200).json({roomId:room._id, roomName:room.name, userList:userList});
+}
+
+async function getRooms(req, res){
+  const {email} = req.body;
+  const rooms = Service.RoomService.getRooms(email);
+  return res.status(200).json(rooms);
 }
 
 //U
@@ -15,4 +22,4 @@ async function deleteRoom() {}
 //R
 async function getParticipants() {}
 
-export { createRoom, addToRoom, leaveRoom, getParticipants };
+export { createRoom, addToRoom, leaveRoom, getParticipants, getRooms };

@@ -1,4 +1,4 @@
-import { AuthService } from "../services/index.js";
+import { AuthService, RoomService } from "../services/index.js";
 import notifier from "../utils/NotificationStore.js";
 
 export async function signup(req, res) {
@@ -17,13 +17,19 @@ export async function signup(req, res) {
 }
 
 export function login(socket) {
-  return async (payload) => {
+  return async (payload, callback) => {
     const email = payload.email;
     const password = payload.password;
 
     // console.log(email);
-    if (await AuthService.login(email, password)) {
+    const userId = await AuthService.login(email, password);
+    if (userId){
       notifier.addSocket(payload.email, socket);
+      const rooms = await RoomService.getRooms(email);
+      // console.log(JSON.stringify(rooms, null, 4));
+      rooms.map((room)=>{socket.join(room._id)})
+      callback({message:"logged in successfully"});
+      // socket.emit("rooms", rooms);
     }
     else{
         socket.emit("error")
