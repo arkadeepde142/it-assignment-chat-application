@@ -11,8 +11,9 @@ async function createRoom(req, res) {
 async function getRooms(req, res) {
   // console.log(req.locals.user);
   const { email } = req.locals.user;
-  const rooms = Service.RoomService.getRooms(email);
-  return res.status(200).json(rooms);
+  const rooms = await Service.RoomService.getRooms(email);
+  console.log(rooms)
+  return res.status(200).json({rooms});
 }
 
 //U

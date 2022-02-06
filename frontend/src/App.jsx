@@ -4,25 +4,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function App() {
-  const [socket, setSocket] = useState(null);
-
-  useEffect(() => {
-    const newSocket = io(`http://127.0.0.1:8000`, {
-      withCredentials: true,
-      extraHeaders: {
-        Authorization: `Bearer ${123}`
-      }
-    });
-    setSocket(newSocket);
-    const connectHandler = (s) => {
-      console.log("Connected");
-    };
-    newSocket.on("connect", connectHandler);
-    return () => {
-      newSocket.off("connect", connectHandler);
-      newSocket.close();
-    };
-  }, [setSocket]);
 
   const navigate = useNavigate();
   return (
@@ -49,21 +30,30 @@ function App() {
           <div style={{ margin: 15 }}>
             <button
               onClick={async () => {
-                const emailField = document.getElementById("email");
-                const passwordField = document.getElementById("password");
-                socket.emit(
-                  "login",
-                  {
-                    email: emailField.value,
-                    password: passwordField.value,
-                  },
-                  (res) => {
-                    navigate("/rooms", {
-                      state: { socket: socket, email: emailField.value },
-                    });
-                  }
-                );
-              }}
+              const emailField = document.getElementById("email");
+              const passwordField = document.getElementById("password");
+              
+              const response = await fetch("http://localhost:8000/auth/login", {
+                method: "POST",
+                mode: "cors",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  email: emailField.value,
+                  password: passwordField.value,
+                }),
+              });
+
+              try{
+                const p = await response.json()
+                console.log(p);
+                //navigate
+                navigate('/rooms', {state:p, replace:true})
+              }
+              catch(e){
+                // invalid log in ( display error message )
+              }
+              
+            }}
             >
               Login
             </button>
@@ -99,7 +89,7 @@ function App() {
               const passwordField = document.getElementById("password_signup");
               const lname = document.getElementById("lname");
               const fname = document.getElementById("fname");
-              const response = await fetch("http://localhost:8000/auth", {
+              const response = await fetch("http://localhost:8000/auth/signup", {
                 method: "POST",
                 mode: "cors",
                 headers: { "content-type": "application/json" },

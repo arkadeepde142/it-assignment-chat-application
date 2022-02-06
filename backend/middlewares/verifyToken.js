@@ -2,8 +2,10 @@ import jwt from "jsonwebtoken";
 
 export default function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
+  // console.log(authHeader)
   if (authHeader) {
     const token = authHeader.split(" ")[1];
+    // console.log(token)
     try {
       const payload = jwt.verify(token, process.env.PRIVATE_KEY, {
         expiresIn: "1d",
