@@ -7,7 +7,7 @@ import roomRouter from "./routes/roomRouter.js";
 import cors from "cors";
 import loader from "./loaders/databaseLoader.js";
 import notifier from "./utils/NotificationStore.js";
-import { AuthService } from "./services/index.js";
+import { AuthService, RoomService } from "./services/index.js";
 import { AuthController, RoomController } from "./controllers/index.js";
 import "dotenv/config";
 import { verifyToken } from "./middlewares/index.js";
@@ -37,15 +37,21 @@ try {
       credentials: true,
     },
   });
-  // const res= await AuthService.login("arpannandi12@gmail.com","12345678");
-  // console.log(res)
-  // await
+
   ws.use((socket, next) => verifyToken(socket.request, {}, next));
-  ws.on("connect", (socket) => {
-    console.log(`Client ${socket.request.locals.user.email} connected`);
+  ws.on("connect", async (socket) => {
+    const email = socket.request.locals.user.email;
+    console.log(`Client ${email} connected`);
+    notifier.addSocket(email, socket);
+
+    const rooms = await RoomService.getRooms(email);
+    rooms.map((room) => {
+      socket.join(room._id);
+    });
+
     socket.once("disconnect", async () => {
       notifier.removeSocket(socket);
-      console.log(`Client ${socket.request.locals.user.email} disconnected`);
+      console.log(`Client ${email} disconnected`);
     });
     // socket.on("login", AuthController.login(socket));
     socket.on("room:join", async (room) => {});

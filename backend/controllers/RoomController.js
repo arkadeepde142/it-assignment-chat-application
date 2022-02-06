@@ -1,29 +1,27 @@
 import * as Service from "../services/index.js";
 //C
-async function createRoom(req, res) {
+export async function createRoom(req, res) {
   const { roomName, userList } = req.body;
   const room = await Service.RoomService.createRoom(roomName, userList);
   return res
     .status(200)
-    .json({ roomId: room._id, roomName: room.name, userList: userList });
+    .json({ _id: room._id, name: room.name, participants: room.participants });
 }
 
-async function getRooms(req, res) {
+export async function getRooms(req, res) {
   // console.log(req.locals.user);
   const { email } = req.locals.user;
   const rooms = await Service.RoomService.getRooms(email);
-  console.log(rooms)
-  return res.status(200).json({rooms});
+  console.log(rooms);
+  return res.status(200).json({ rooms });
 }
 
 //U
-async function addToRoom() {}
+export async function addToRoom() {}
 //U
-async function leaveRoom() {}
+export async function leaveRoom() {}
 
-async function deleteRoom() {}
+export async function deleteRoom() {}
 
 //R
-async function getParticipants() {}
-
-export { createRoom, addToRoom, leaveRoom, getParticipants, getRooms };
+export async function getParticipants() {}
