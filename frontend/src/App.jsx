@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { useEffect, useState } from "react";
-import Messages from "./components/Messages";
+// import Messages from "./components/Messages";
 import { useNavigate } from "react-router-dom";
 
 function App() {
@@ -9,6 +9,9 @@ function App() {
   useEffect(() => {
     const newSocket = io(`http://127.0.0.1:8000`, {
       withCredentials: true,
+      extraHeaders: {
+        Authorization: `Bearer ${123}`
+      }
     });
     setSocket(newSocket);
     const connectHandler = (s) => {

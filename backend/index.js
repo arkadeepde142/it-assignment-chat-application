@@ -7,10 +7,10 @@ import roomRouter from "./routes/roomRouter.js";
 import cors from "cors";
 import loader from "./loaders/databaseLoader.js";
 import notifier from "./utils/NotificationStore.js";
-import {AuthService} from "./services/index.js"
-import { AuthController, RoomController } from "./controllers/index.js"; 
-
-
+import { AuthService } from "./services/index.js";
+import { AuthController, RoomController } from "./controllers/index.js";
+import "dotenv/config";
+import { verifyToken } from "./middlewares/index.js";
 
 try {
   await loader({ url: "mongodb://localhost:27017/chat" });
@@ -28,7 +28,7 @@ try {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use("/auth", authRouter);
-  app.use("/room", roomRouter);
+  app.use("/room", verifyToken, roomRouter);
 
   const server = http.createServer(app);
   const ws = new Server(server, {
@@ -39,20 +39,21 @@ try {
   });
   // const res= await AuthService.login("arpannandi12@gmail.com","12345678");
   // console.log(res)
-  // await 
+  // await
+  ws.use((socket, next) => verifyToken(socket.request, {}, next));
   ws.on("connect", (socket) => {
-    console.log(`Client ${socket.id} connected`);
+    console.log(`Client ${socket.request.locals.user.email} connected`);
     socket.once("disconnect", async () => {
       notifier.removeSocket(socket);
-      console.log(`Client ${socket.id} disconnected`);
+      console.log(`Client ${socket.request.locals.user.email} disconnected`);
     });
-    socket.on("login", AuthController.login(socket));
+    // socket.on("login", AuthController.login(socket));
     socket.on("room:join", async (room) => {});
     socket.on("room:create", RoomController.createRoom);
     socket.on("room:leave", async (roomID) => {});
     // socket.on("message:broadcast");
   });
-
+  // console.log(process.env.PRIVATE_KEY);
   const PORT = 8000;
   server.listen(PORT, () => {
     console.log("Backend Server Started");
