@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 import useSocket from "../hooks/useSocket";
 
 export default function Rooms() {
-  const { state } = useLocation();
+  // const { state } = useLocation();
   // console.log(useLocation());
-  const { token } = state;
+  const auth = useAuth()[0];
+  const { token } = auth;
   const [roomStore, setRoomStore] = useState([]);
-
+  const socket = useSocket(token);
+  
   useEffect(() => {
     (async () => {
       const response = await fetch("http://localhost:8000/room", {
@@ -24,7 +26,7 @@ export default function Rooms() {
     // setRoomStore(await response.json())
   }, [token]);
 
-  const socket = useSocket(token);
+
 
   return socket ? (
     <div style={{ height: 300, width: 700, marginLeft: 330, marginTop: 20 }}>
