@@ -4,11 +4,16 @@ import * as db from "./models/index.js";
 import { Server } from "socket.io";
 import authRouter from "./routes/authRouter.js";
 import roomRouter from "./routes/roomRouter.js";
+import messageRouter from "./routes/messageRouter.js";
 import cors from "cors";
 import loader from "./loaders/databaseLoader.js";
 import notifier from "./utils/NotificationStore.js";
 import { AuthService, RoomService } from "./services/index.js";
-import { AuthController, RoomController } from "./controllers/index.js";
+import {
+  AuthController,
+  RoomController,
+  MessageController,
+} from "./controllers/index.js";
 import "dotenv/config";
 import { verifyToken } from "./middlewares/index.js";
 
@@ -29,6 +34,7 @@ try {
   app.use(express.urlencoded({ extended: false }));
   app.use("/auth", authRouter);
   app.use("/room", verifyToken, roomRouter);
+  app.use("/message", verifyToken, messageRouter);
 
   const server = http.createServer(app);
   const ws = new Server(server, {
@@ -56,6 +62,7 @@ try {
     socket.on("room:join", async (room) => {});
     socket.on("room:create", RoomController.createRoom);
     socket.on("room:leave", async (roomID) => {});
+    socket.on("message", MessageController.createMessage(socket));
   });
   // console.log(process.env.PRIVATE_KEY);
   const PORT = 8000;

@@ -26,7 +26,6 @@ export async function getParticipants(roomID) {
 }
 
 export async function getRooms(email) {
-  console.log(email)
   const userId = (await db.User.findOne({email}))._id
   const rooms = await db.Room.find({
     participants: { $in: [userId] },

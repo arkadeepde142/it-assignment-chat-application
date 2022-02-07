@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import io from "socket.io-client";
+import { useContext } from "react";
 import socketContext from "../contexts/socketContext";
 
 export default function useSocket() {

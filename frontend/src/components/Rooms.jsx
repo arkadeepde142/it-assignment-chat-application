@@ -11,10 +11,10 @@ export default function Rooms() {
   const [roomStore, setRoomStore] = useState([]);
   const socket = useSocket();
   const navigate = useNavigate();
-  
+
   // const [participants, setParticipants] = useState([]);
   // const [show, setShow] = useState(false);
-  
+
   useEffect(() => {
     (async () => {
       const response = await fetch("http://localhost:8000/room", {
@@ -31,8 +31,6 @@ export default function Rooms() {
     // setRoomStore(await response.json())
   }, [token]);
 
-
-
   return socket ? (
     <div style={{ height: 300, width: 700, marginLeft: 330, marginTop: 20 }}>
       <div style={{ height: 50, width: 700, marginLeft: 330, marginTop: 10 }}>
@@ -41,16 +39,26 @@ export default function Rooms() {
         </header>
       </div>
       {roomStore.map((room) => (
-        <Link to={{pathname:'/messages'}}  key={room._id}>
-        <div style={{width:400, height:40, margin:30, padding:15, color:'black', textAlign:'center', backgroundColor:'light-gray'}}>{room.name}</div>
+        <Link to={{ pathname: "/messages" }} state={{ room }} key={room._id}>
+          <div
+            style={{
+              width: 400,
+              height: 40,
+              margin: 30,
+              padding: 15,
+              color: "black",
+              textAlign: "center",
+              backgroundColor: "light-gray",
+            }}
+          >
+            {room.name}
+          </div>
         </Link>
       ))}
       <button
-        onClick={
-          ()=>{
-            navigate('/createroom');
-          }
-        }
+        onClick={() => {
+          navigate("/createroom");
+        }}
       >
         Create Room
       </button>
