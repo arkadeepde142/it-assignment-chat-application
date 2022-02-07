@@ -53,11 +53,9 @@ try {
       notifier.removeSocket(socket);
       console.log(`Client ${email} disconnected`);
     });
-    // socket.on("login", AuthController.login(socket));
     socket.on("room:join", async (room) => {});
     socket.on("room:create", RoomController.createRoom);
     socket.on("room:leave", async (roomID) => {});
-    // socket.on("message:broadcast");
   });
   // console.log(process.env.PRIVATE_KEY);
   const PORT = 8000;

@@ -1,7 +1,7 @@
 import Login from "./components/Login";
-import Rooms from "./components/Rooms";
+import Chat from "./components/Chat.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AuthProvider from "./providers/AuthProvider";
+import AuthProvider from "./providers/AuthProvider.jsx";
 import RequireAuth from "./components/RequireAuth";
 
 function App() {
@@ -10,15 +10,8 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route exact path="/" element={<Login />} />
-          <Route
-            exact
-            path="/rooms"
-            element={
-              <RequireAuth>
-                <Rooms />
-              </RequireAuth>
-            }
-          />
+          <Route path="/*" element={<Chat/>} />
+          {/* <Chat/> */}
         </Routes>
       </AuthProvider>
     </BrowserRouter>

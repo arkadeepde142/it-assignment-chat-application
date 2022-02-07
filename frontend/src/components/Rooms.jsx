@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import useSocket from "../hooks/useSocket";
 
@@ -8,7 +9,11 @@ export default function Rooms() {
   const auth = useAuth()[0];
   const { token } = auth;
   const [roomStore, setRoomStore] = useState([]);
-  const socket = useSocket(token);
+  const socket = useSocket();
+  const navigate = useNavigate();
+  
+  // const [participants, setParticipants] = useState([]);
+  // const [show, setShow] = useState(false);
   
   useEffect(() => {
     (async () => {
@@ -36,25 +41,16 @@ export default function Rooms() {
         </header>
       </div>
       {roomStore.map((room) => (
-        <div key={room._id}>{room.name}</div>
+        <Link to={{pathname:'/messages'}}  key={room._id}>
+        <div style={{width:400, height:40, margin:30, padding:15, color:'black', textAlign:'center', backgroundColor:'light-gray'}}>{room.name}</div>
+        </Link>
       ))}
       <button
-        onClick={async () => {
-          const response = await fetch("http://localhost:8000/room", {
-            method: "POST",
-            mode: "cors",
-            headers: {
-              "content-type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              roomName: "testRoom",
-              userList: ["ab@gmail.com"],
-            }),
-          });
-          const room = await response.json();
-          setRoomStore((rooms) => [...rooms, room]);
-        }}
+        onClick={
+          ()=>{
+            navigate('/createroom');
+          }
+        }
       >
         Create Room
       </button>

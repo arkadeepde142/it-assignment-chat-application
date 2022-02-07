@@ -14,6 +14,9 @@ const MessageSchema = new mongoose.Schema(
       type: String,
       enum: ["text", "image"],
     },
+    bytes: {
+      type: mongoose.Schema.Types.Buffer,
+    }
   },
   { timestamps: true }
 );
