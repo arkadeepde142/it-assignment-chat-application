@@ -14,8 +14,8 @@ export async function createMessage(userId, roomId, type, buffer) {
   const result = {
     _id: message._id,
     source: message.source,
-    type: type,
-    bytes: buffer,
+    type: message.type,
+    bytes: message.bytes,
     createdAt: message.createdAt,
   };
   // console.log(result);
@@ -23,6 +23,9 @@ export async function createMessage(userId, roomId, type, buffer) {
 }
 
 export async function getMessages(room) {
-  const messages = await db.Message.find({ room });
+  const messages = await db.Message.find({ room }).populate(
+    "source",
+    "email -_id"
+  );
   return messages;
 }

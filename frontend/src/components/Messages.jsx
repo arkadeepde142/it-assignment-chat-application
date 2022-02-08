@@ -12,6 +12,7 @@ export default function Messages() {
 
   useEffect(() => {
     const messageListener = async (message) => {
+      message = await new Blob(message.bytes.data).text();
       setMessageStore((messageStore) => [...messageStore, message]);
     };
     socket.on("message", messageListener);
@@ -22,7 +23,6 @@ export default function Messages() {
   }, [socket]);
 
   useEffect(() => {
-    // async() => {
     (async () => {
       const response = await fetch("http://localhost:8000/message/", {
         method: "POST",
@@ -38,7 +38,14 @@ export default function Messages() {
 
       if (response.ok) {
         const result = await response.json();
-        setMessageStore((messageStore) => [...messageStore, ...result.messages]);
+        const modified = await Promise.all(
+          result.messages.map(async (message) => {
+            const decoder = new TextDecoder();
+            const text = decoder.decode(Uint8Array.from(message.bytes.data))
+            return { ...message, bytes: text };
+          })
+        );
+        setMessageStore((messageStore) => [...messageStore, ...modified]);
       }
     })();
   }, [room, token]);
@@ -53,8 +60,8 @@ export default function Messages() {
       <div style={{ height: 200, width: 500, marginLeft: 60, marginTop: 20 }}>
         {messageStore.map((message, index) => (
           <div key={message._id}>
-            <span>{message.source === email ? "Me" : message.source} : </span>
-            <span>{message.bytes.toString()}</span>
+            <span>{message.source.email === email ? "Me" : message.source} : </span>
+            <span>{message.bytes}</span>
           </div>
         ))}
       </div>

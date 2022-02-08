@@ -60,9 +60,9 @@ try {
       notifier.removeSocket(socket);
       console.log(`Client ${email} disconnected`);
     });
-    socket.on("room:join", async (room) => {});
-    socket.on("room:create", RoomController.createRoom);
-    socket.on("room:leave", async (roomID) => {});
+    // socket.on("room:join", async (room) => {});
+    // socket.on("room:create", RoomController.createRoom);
+    // socket.on("room:leave", async (roomID) => {});
     socket.on("message", MessageController.createMessage(socket));
   });
   // console.log(process.env.PRIVATE_KEY);
