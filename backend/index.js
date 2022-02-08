@@ -51,9 +51,10 @@ try {
     notifier.addSocket(email, socket);
 
     const rooms = await RoomService.getRooms(email);
-    rooms.map((room) => {
-      socket.join(room._id);
+    const ids = rooms.map(async (room) => {
+      await socket.join(room._id.toString());
     });
+
 
     socket.once("disconnect", async () => {
       notifier.removeSocket(socket);
