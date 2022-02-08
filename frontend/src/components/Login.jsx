@@ -6,11 +6,24 @@ function Login() {
   const setAuth = useAuth()[1];
   return (
     <>
-      <header style={{ marginLeft: 550, marginTop: 10 }}>
-        <h2>Landing Page</h2>
-      </header>
-      <main>
-        <div style={{ marginLeft: 350, marginTop: 100 }}>
+      <main style={{height:"100%"}}>
+        <div
+          style={{
+            flex: 1,
+            height: "20%",
+            width: "100%",
+            backgroundColor: "#688A08",
+            alignContent: "center",
+            justifyContent: "center",
+            paddingTop:40
+          }}
+        
+        >
+          <h2 style={{ color: "white", textAlign: "center"}}>
+            Messenger  
+          </h2>
+        </div>
+        <div style={{marginLeft:'30%', marginTop:'3%' , backgroundColor:'lavender', borderRadius:15, padding:20}}>
           <div>
             {" "}
             <h3>Login</h3>
@@ -25,6 +38,7 @@ function Login() {
           </div>
           <div style={{ margin: 15 }}>
             <button
+            style={{textAlign:'center', color:'grey', backgroundColor:'#F5D0A9', fontSize:18, padding:10, borderRadius:10}}
               onClick={async () => {
                 const emailField = document.getElementById("email");
                 const passwordField = document.getElementById("password");
@@ -47,13 +61,12 @@ function Login() {
                     //navigate
                     setAuth(p);
                     navigate("/rooms");
-                  }
-                  else {
-                    throw new Error("Wrong password")
+                  } else {
+                    throw new Error("Wrong password");
                   }
                 } catch (e) {
                   // invalid log in ( display error message )
-                  console.log("Login Error")
+                  console.log("Login Error");
                 }
               }}
             >
@@ -62,7 +75,7 @@ function Login() {
           </div>
         </div>
 
-        <div style={{ marginLeft: 350, marginTop: 100 }}>
+        <div style={{marginLeft:'30%', marginTop:'1%' ,backgroundColor:'lavender', borderRadius:15, padding:20}}>
           <div>
             <h3>Sign up</h3>
           </div>
@@ -87,6 +100,7 @@ function Login() {
 
           <div style={{ margin: 15 }}>
             <button
+            style={{textAlign:'center', color:'grey', backgroundColor:'#F5D0A9', fontSize:18, padding:10, borderRadius:10}}
               onClick={async () => {
                 const emailField = document.getElementById("email_signup");
                 const passwordField =

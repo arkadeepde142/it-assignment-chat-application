@@ -10,7 +10,7 @@ export function createMessage(socket) {
       type,
       bytes
     );
-    message.source = socket.request.locals.user.email;
+    message.source = {email : socket.request.locals.user.email};
     socket.to(room).emit("message", message);
     callback(message);
   };

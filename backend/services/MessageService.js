@@ -9,7 +9,9 @@ export async function createMessage(userId, roomId, type, buffer) {
     room: room,
     type: type,
     bytes: buffer,
-  });
+  })
+
+  // const messagePop = await message.populate("source", "email -_id");
   // console.log(message);
   const result = {
     _id: message._id,
