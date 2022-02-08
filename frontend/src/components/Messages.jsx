@@ -90,10 +90,12 @@ export default function Messages() {
           borderRadius: 10,
           borderBottomWidth:0,
           overflowY : "scroll",
-          padding:15
+          padding:15,
+          display:'flex',
+          flexDirection:'column'
         }}
       >
-        {messageStore.map((message, index) => (
+        {/* {messageStore.map((message, index) => (
           <div key={message._id} style={{maxWidth:"50%", backgroundColor:'lightgrey', padding:10, margin:5, borderRadius:5}}>
             <span>
               {message.source && message.source.email === email
@@ -103,7 +105,27 @@ export default function Messages() {
             </span>
             <span>{message.bytes}</span>
           </div>
+        ))} */}
+
+        {messageStore.map((message, index) => (
+          <div key={message._id} >
+            <span>
+              {message.source && message.source.email === email
+                ? (<div style={{maxWidth:"70%", backgroundColor:'#D8EC87', padding:10, margin:5, borderRadius:5, marginLeft:"30%"}}>
+                {message.bytes}
+                </div>)
+                : (
+                  <div style={{maxWidth:"70%", backgroundColor:'lightgrey', padding:10, margin:5, borderRadius:5}}>
+                  <div>{message.source.email} :  {message.bytes}</div>
+                  
+                  </div>
+                )}
+            </span>
+            {/* <span>{message.bytes}</span> */}
+          </div>
         ))}
+
+
       </div>
 
       <div
@@ -114,6 +136,7 @@ export default function Messages() {
           padding: 15,
           borderRadius: 5,
           marginLeft: "15%",
+          fontSize:17
         }}
       >
         <input
