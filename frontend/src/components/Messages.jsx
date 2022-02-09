@@ -20,10 +20,10 @@ export default function Messages() {
       setMessageStore((messageStore) => [...messageStore, message]);
       console.log(message);
     };
-    socket.on("message", messageListener);
+    socket.on(`message_${room._id}`, messageListener);
 
     return () => {
-      socket.off("message", messageListener);
+      socket.off(`message_${room._id}`, messageListener);
     };
   }, [socket]);
 
@@ -175,6 +175,7 @@ export default function Messages() {
                 setMessageStore((messageStore) => [...messageStore, message]);
               }
             );
+            messageWindow.value=""
           }}
         >
           Send

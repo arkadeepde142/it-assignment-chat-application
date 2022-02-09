@@ -11,7 +11,7 @@ export function createMessage(socket) {
       bytes
     );
     message.source = {email : socket.request.locals.user.email};
-    socket.to(room).emit("message", message);
+    socket.to(room).emit(`message_${room}`, message);
     callback(message);
   };
 }

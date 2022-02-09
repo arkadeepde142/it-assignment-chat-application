@@ -6,7 +6,7 @@ function Login() {
   const setAuth = useAuth()[1];
   return (
     <>
-      <main style={{height:"100%"}}>
+      <main style={{height:"100%", display:'flex', flexDirection:'column'}}>
         <div
           style={{
             flex: 1,
@@ -15,7 +15,8 @@ function Login() {
             backgroundColor: "#688A08",
             alignContent: "center",
             justifyContent: "center",
-            paddingTop:40
+            paddingTop:40,
+            paddingBottom:10
           }}
         
         >
@@ -23,20 +24,19 @@ function Login() {
             Messenger  
           </h2>
         </div>
-        <div style={{marginLeft:'30%', marginTop:'3%' , backgroundColor:'lavender', borderRadius:15, padding:20}}>
-          <div>
-            {" "}
+        <div style={{display:'flex', flexDirection:'column', marginTop:'1%', backgroundColor:'lavender', borderRadius:15, padding:20, alignItems:'flex-end', marginRight:'39%'}}>
+          <div style={{ marginRight: '25%' }}>
             <h3>Login</h3>
           </div>
-          <div style={{ margin: 15 }}>
+          <div style={{ marginRight: '4.5%' }}>
             <label htmlFor="email">email : </label>
             <input type="text" id="email"></input>
           </div>
-          <div style={{ margin: 15 }}>
+          <div style={{ marginTop: 10 }}>
             <label htmlFor="password">password : </label>
             <input type="text" id="password"></input>
           </div>
-          <div style={{ margin: 15 }}>
+          <div style={{ marginTop: 20, marginRight: '21%' }}>
             <button
             style={{textAlign:'center', color:'grey', backgroundColor:'#F5D0A9', fontSize:18, padding:10, borderRadius:10}}
               onClick={async () => {
@@ -75,7 +75,7 @@ function Login() {
           </div>
         </div>
 
-        <div style={{marginLeft:'30%', marginTop:'1%' ,backgroundColor:'lavender', borderRadius:15, padding:20}}>
+        <div style={{marginLeft:'40%', marginTop:'1%' ,backgroundColor:'lavender', borderRadius:15, padding:20}}>
           <div>
             <h3>Sign up</h3>
           </div>
