@@ -9,23 +9,41 @@ export default function Messages() {
   console.log(location);
   const { room } = location.state;
   const { email, token } = useAuth()[0];
+  const [image, setImage] = useState(null);
+
+  // const imageDecoder = (arrayBuffer) =>
+  //   new Promise((res, rej) => {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       res(e.target.result);
+  //     };
+  //     reader.onerror = (e) => {
+  //       rej(e);
+  //     };
+  //     reader.readAsDataURL(new Blob([arrayBuffer]));
+  //   });
 
   useEffect(() => {
     const messageListener = async (message) => {
-      // message = await new Blob(message.bytes.data).text();
-      const decoder = new TextDecoder();
-      // console.log("hello")
-      const text = decoder.decode(new Uint8Array(message.bytes));
-      message = { ...message, bytes: text };
-      setMessageStore((messageStore) => [...messageStore, message]);
-      console.log(message);
+      if (message.type === "text") {
+        const decoder = new TextDecoder();
+        const text = decoder.decode(new Uint8Array(message.bytes));
+        message = { ...message, bytes: text };
+        setMessageStore((messageStore) => [...messageStore, message]);
+        console.log(message);
+      } else {
+        message.url = URL.createObjectURL(
+          new Blob([new Uint8Array(message.bytes)])
+        );
+        setMessageStore((messageStore) => [...messageStore, message]);
+      }
     };
     socket.on(`message_${room._id}`, messageListener);
 
     return () => {
       socket.off(`message_${room._id}`, messageListener);
     };
-  }, [socket]);
+  }, [socket, room._id]);
 
   useEffect(() => {
     (async () => {
@@ -45,19 +63,26 @@ export default function Messages() {
         const result = await response.json();
         const modified = await Promise.all(
           result.messages.map(async (message) => {
-            const decoder = new TextDecoder();
-            // console.log("hello")
-            const text = decoder.decode(Uint8Array.from(message.bytes.data));
-            return { ...message, bytes: text };
+            if (message.type === "text") {
+              const decoder = new TextDecoder();
+              // console.log("hello")
+              const text = decoder.decode(Uint8Array.from(message.bytes.data));
+              return { ...message, bytes: text };
+            }
+            const url = URL.createObjectURL(
+              new Blob([Uint8Array.from(message.bytes.data).buffer])
+            );
+            return { ...message, url: url };
           })
         );
-        setMessageStore((messageStore) => [...messageStore, ...modified]);
+        setMessageStore(modified);
       }
     })();
   }, [room, token]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <div id="try"></div>
       <div
         style={{
           flex: 1,
@@ -85,14 +110,14 @@ export default function Messages() {
           marginLeft: "15%",
           marginTop: 20,
           borderColor: "lavender",
-          borderStyle:'solid',
+          borderStyle: "solid",
           borderWidth: 2,
           borderRadius: 10,
-          borderBottomWidth:0,
-          overflowY : "scroll",
-          padding:15,
-          display:'flex',
-          flexDirection:'column'
+          borderBottomWidth: 0,
+          overflowY: "scroll",
+          padding: 15,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* {messageStore.map((message, index) => (
@@ -108,24 +133,65 @@ export default function Messages() {
         ))} */}
 
         {messageStore.map((message, index) => (
-          <div key={message._id} >
-            <span>
-              {message.source && message.source.email === email
-                ? (<div style={{maxWidth:"70%", backgroundColor:'#D8EC87', padding:10, margin:5, borderRadius:5, marginLeft:"30%"}}>
-                {message.bytes}
-                </div>)
-                : (
-                  <div style={{maxWidth:"70%", backgroundColor:'lightgrey', padding:10, margin:5, borderRadius:5}}>
-                  <div>{message.source.email} :  {message.bytes}</div>
-                  
+          <div key={message._id}>
+            
+              {message.source.email === email ? (
+                <div
+                  style={{
+                    maxWidth: "70%",
+                    backgroundColor: "#D8EC87",
+                    padding: 10,
+                    margin: 5,
+                    borderRadius: 5,
+                    marginLeft: "30%",
+                  }}
+                >
+                  {message.type === "text" ? (
+                    <>{message.bytes}</>
+                  ) : (
+                    <img
+                      src={message.url}
+                      alt={`${message.url}`}
+                      style={{
+                        display: "block",
+                        height: "100px",
+                        // objectFit: "contain",
+                      }}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    maxWidth: "70%",
+                    backgroundColor: "lightgrey",
+                    padding: 10,
+                    margin: 5,
+                    borderRadius: 5,
+                  }}
+                >
+                  <div>
+                    {message.source.email} :{" "}
+                    {message.type === "text" ? (
+                      <>{message.bytes}</>
+                    ) : (
+                      <img
+                        src={message.url}
+                        alt={`${message.url}`}
+                        style={{
+                          display: "block",
+                          height: "10%",
+                          objectFit: "contain",
+                        }}
+                      />
+                    )}
                   </div>
-                )}
-            </span>
+                </div>
+              )}
+            
             {/* <span>{message.bytes}</span> */}
           </div>
         ))}
-
-
       </div>
 
       <div
@@ -136,13 +202,26 @@ export default function Messages() {
           padding: 15,
           borderRadius: 5,
           marginLeft: "15%",
-          fontSize:17
+          fontSize: 17,
         }}
       >
         <input
           type="text"
           id="message-window"
           style={{ maxWidth: "80%", borderRadius: 5, flexGrow: 1 }}
+        />
+        <input
+          type="file"
+          id="image"
+          accept="image/png, image/jpeg"
+          onChange={(e) => {
+            console.log(e.target.files[0]);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              setImage(e.target.result);
+            };
+            reader.readAsArrayBuffer(e.target.files[0]);
+          }}
         />
         <button
           style={{
@@ -159,23 +238,48 @@ export default function Messages() {
           }}
           onClick={async () => {
             const messageWindow = document.getElementById("message-window");
-            socket.emit(
-              "message",
-              {
-                room: room._id,
-                bytes: messageWindow.value,
-                type: "text",
-              },
-              (message) => {
-                console.log(message);
-                const decoder = new TextDecoder();
-                const text = decoder.decode(new Uint8Array(message.bytes));
-                message = { ...message, bytes: text };
-                console.log(message);
-                setMessageStore((messageStore) => [...messageStore, message]);
-              }
-            );
-            messageWindow.value=""
+            if (image) {
+              console.log(
+                URL.createObjectURL(
+                  new Blob([image], {
+                    type: "image/png",
+                  })
+                )
+              );
+              socket.emit(
+                "message",
+                {
+                  room: room._id,
+                  bytes: image,
+                  type: "image",
+                },
+                (message) => {
+                  message.url = URL.createObjectURL(
+                    new Blob([new Uint8Array(message.bytes).buffer], {
+                      type: "image/png",
+                    })
+                  );
+                  console.log(message.url);
+                  setMessageStore((messageStore) => [...messageStore, message]);
+                }
+              );
+            } else {
+              socket.emit(
+                "message",
+                {
+                  room: room._id,
+                  bytes: messageWindow.value,
+                  type: "text",
+                },
+                (message) => {
+                  const decoder = new TextDecoder();
+                  const text = decoder.decode(new Uint8Array(message.bytes));
+                  message = { ...message, bytes: text };
+                  setMessageStore((messageStore) => [...messageStore, message]);
+                }
+              );
+            }
+            messageWindow.value = "";
           }}
         >
           Send
