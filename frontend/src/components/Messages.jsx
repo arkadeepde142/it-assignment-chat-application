@@ -134,16 +134,18 @@ export default function Messages() {
 
         {messageStore.map((message, index) => (
           <div key={message._id}>
-            
               {message.source.email === email ? (
+                <div style={{display:'flex', justifyContent:'flex-end'}}>
                 <div
                   style={{
-                    maxWidth: "70%",
+                    // maxWidth: "60%",
+                    // minWidth: "20%",
+                    width:'fit-content',
                     backgroundColor: "#D8EC87",
                     padding: 10,
                     margin: 5,
                     borderRadius: 5,
-                    marginLeft: "30%",
+                    // marginLeft: "80%",
                   }}
                 >
                   {message.type === "text" ? (
@@ -154,20 +156,25 @@ export default function Messages() {
                       alt={`${message.url}`}
                       style={{
                         display: "block",
-                        height: "100px",
-                        // objectFit: "contain",
+                        // height: "200px",
+                        maxWidth:"300px",
+                        objectFit: "contain",
                       }}
                     />
                   )}
                 </div>
+                </div>
               ) : (
                 <div
                   style={{
-                    maxWidth: "70%",
+                    // maxWidth: "60%",
+                    // minWidth: "20%",
+                    width:'fit-content',
                     backgroundColor: "lightgrey",
                     padding: 10,
                     margin: 5,
                     borderRadius: 5,
+                    justifySelf:'flex-end'
                   }}
                 >
                   <div>
@@ -180,8 +187,10 @@ export default function Messages() {
                         alt={`${message.url}`}
                         style={{
                           display: "block",
-                          height: "10%",
+                          // height: "200px",
+                          maxWidth:"300px",
                           objectFit: "contain",
+                          // marginLeft:"20%"
                         }}
                       />
                     )}
@@ -210,8 +219,30 @@ export default function Messages() {
           id="message-window"
           style={{ maxWidth: "80%", borderRadius: 5, flexGrow: 1 }}
         />
+        <button
+        style={{
+            textAlign: "center",
+            alignSelf: "center",
+            color: "grey",
+            backgroundColor: image!=null ? "black" :"#F5D0A9",
+            fontSize: 18,
+            padding: 10,
+            borderRadius: 10,
+            marginLeft: 30,
+            flexGrow: 1,
+            maxWidth: "20%",
+          }}
+
+          onClick={()=>{
+            const imageInput = document.getElementById("image");
+            imageInput.click();
+          }}
+        >
+        Image
+        </button>
         <input
           type="file"
+          style={{display:"none"}}
           id="image"
           accept="image/png, image/jpeg"
           onChange={(e) => {
@@ -280,6 +311,7 @@ export default function Messages() {
               );
             }
             messageWindow.value = "";
+            setImage(null);
           }}
         >
           Send
