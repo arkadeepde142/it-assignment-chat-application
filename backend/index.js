@@ -44,17 +44,26 @@ try {
     },
   });
 
+  // const email = "server@server.server"
+  // if(! await db.User.findOne({email})){
+  //   await db.User.create(
+  //     email,
+  //     "server",
+  //     "server",
+  //     "passwprd"
+  //   )
+  // }
+
   ws.use((socket, next) => verifyToken(socket.request, {}, next));
   ws.on("connect", async (socket) => {
     const email = socket.request.locals.user.email;
+    const id = socket.request.locals.user.id;
     console.log(`Client ${email} connected`);
-    notifier.addSocket(email, socket);
-
+    notifier.addSocket(id, socket);
     const rooms = await RoomService.getRooms(email);
     const ids = rooms.map(async (room) => {
       await socket.join(room._id.toString());
     });
-
 
     socket.once("disconnect", async () => {
       notifier.removeSocket(socket);
@@ -65,6 +74,19 @@ try {
     // socket.on("room:leave", async (roomID) => {});
     socket.on("message", MessageController.createMessage(socket));
   });
+
+  notifier.on("join", (socket, room, message)=>{
+    socket.join(room._id.toString());
+    console.log("emitting.....")
+    ws.to(room._id.toString()).emit("join", room);
+    ws.to(room._id.toString()).emit(`notification_${room._id}`, message);
+  });
+  notifier.on("leave", (socket, room, message)=>{
+    ws.to(room._id.toString()).emit("leave", room);
+    ws.to(room._id.toString()).emit(`message_${room._id}`, message);
+    socket.leave(room._id.toString());
+  });
+
   // console.log(process.env.PRIVATE_KEY);
   const PORT = 8000;
   server.listen(PORT, () => {

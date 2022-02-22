@@ -6,9 +6,10 @@ import useSocket from "../hooks/useSocket";
 export default function Rooms() {
   // const { state } = useLocation();
   // console.log(useLocation());
+  console.log("loaded...");
   const auth = useAuth()[0];
-  const { token } = auth;
-  const [roomStore, setRoomStore] = useState([]);
+  const { email, token } = auth;
+  const [roomStore, setRoomStore] = useState(new Map());
   const socket = useSocket();
   const navigate = useNavigate();
 
@@ -17,6 +18,7 @@ export default function Rooms() {
 
   useEffect(() => {
     (async () => {
+      console.log("Fetch");
       const response = await fetch("http://localhost:8000/room", {
         method: "GET",
         mode: "cors",
@@ -26,10 +28,35 @@ export default function Rooms() {
         },
       });
       const { rooms } = await response.json();
-      setRoomStore(rooms);
+      const map = new Map();
+      for(const room of rooms)
+      {
+        map.set(room._id, room);
+      }
+      setRoomStore(map);
     })();
-    // setRoomStore(await response.json())
   }, [token]);
+
+  useEffect(() => {
+    console.log("HEHE");
+    const cb = (room) => {
+      setRoomStore((roomStore) => {
+        const map = new Map(roomStore);
+        map.set(room._id, room);
+        console.log(map);
+        return map;
+      });
+    };
+
+    if (socket) {
+      socket.on("join", cb);
+    }
+    return () => {
+      if (socket) {
+        socket.off("join", cb);
+      }
+    };
+  }, [socket]);
 
   return socket ? (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -45,6 +72,7 @@ export default function Rooms() {
         }}
       >
         <h2 style={{ color: "white", textAlign: "center" }}>Messenger</h2>
+        <h4 style={{ color: "lavender", textAlign: "center" }}>{email}</h4>
       </div>
       <div
         style={{ backgroundColor: "#F7D358", borderRadius: 15, padding: 20 }}
@@ -72,7 +100,7 @@ export default function Rooms() {
         Create New Room
       </button>
 
-      {roomStore.map((room) => (
+      {Array.from(roomStore.values(), (room) => (
         <Link
           to={{ pathname: "/messages" }}
           state={{ room }}

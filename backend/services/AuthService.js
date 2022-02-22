@@ -25,6 +25,11 @@ export async function login(email, password) {
   }
 }
 
+export async function getIdByEmail(email){
+  const user = await db.User.findOne({email});
+  return user._id;
+}
+
 export async function signup(email, firstName, lastName, password) {
   try {
     const user = await db.User.create({ email, firstName, lastName, password });

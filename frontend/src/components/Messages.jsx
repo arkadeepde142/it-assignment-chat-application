@@ -38,10 +38,27 @@ export default function Messages() {
         setMessageStore((messageStore) => [...messageStore, message]);
       }
     };
+
     socket.on(`message_${room._id}`, messageListener);
 
     return () => {
       socket.off(`message_${room._id}`, messageListener);
+    };
+  }, [socket, room._id]);
+
+  useEffect(() => {
+    const notifListener = async (message) => {
+      const decoder = new TextDecoder();
+      const text = decoder.decode(new Uint8Array(message.bytes));
+      message = { ...message, bytes: text };
+      setMessageStore((messageStore) => [...messageStore, message]);
+      console.log(message);
+    };
+
+    socket.on(`notification_${room._id}`, notifListener);
+
+    return () => {
+      socket.off(`notification_${room._id}`, notifListener);
     };
   }, [socket, room._id]);
 
@@ -76,6 +93,7 @@ export default function Messages() {
           })
         );
         setMessageStore(modified);
+        console.log("http request for message store setting");
       }
     })();
   }, [room, token]);
@@ -95,12 +113,82 @@ export default function Messages() {
         }}
       >
         <h2 style={{ color: "white", textAlign: "center" }}>Messenger</h2>
+        <h4 style={{ color: "lavender", textAlign: "center" }}>{email}</h4>
       </div>
 
       <div
-        style={{ backgroundColor: "#F7D358", borderRadius: 15, padding: 20 }}
+        style={{
+          backgroundColor: "#F7D358",
+          borderRadius: 15,
+          padding: 30,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
       >
+        <div>
+          <label htmlFor="email">enter email : </label>
+          <input type="email" id="email"></input>
+          <button
+            style={{
+              textAlign: "center",
+              alignSelf: "center",
+              color: "grey",
+              backgroundColor: "#F5D0A9",
+              fontSize: 16,
+              padding: 10,
+              borderRadius: 10,
+              marginLeft: 30,
+              flexGrow: 1,
+              maxWidth: "30%",
+            }}
+            onClick={async () => {
+              const response = await fetch("http://localhost:8000/room", {
+                method: "PUT",
+                mode: "cors",
+                headers: {
+                  "content-type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  roomId: room._id,
+                  email: document.getElementById("email").value,
+                }),
+              });
+            }}
+          >
+            Add participant
+          </button>
+        </div>
         <h2 style={{ textAlign: "center" }}>{room.name}</h2>
+        <button
+          style={{
+            textAlign: "center",
+            alignSelf: "center",
+            color: "grey",
+            backgroundColor: "#F5D0A9",
+            fontSize: 16,
+            padding: 10,
+            borderRadius: 10,
+            marginLeft: 30,
+            flexGrow: 1,
+            maxWidth: "30%",
+          }}
+          onClick={async () => {
+            const response = await fetch("http://localhost:8000/room", {
+              method: "DELETE",
+              mode: "cors",
+              headers: {
+                "content-type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                roomId: room._id,
+              }),
+            });
+          }}
+        >
+          Leave Room
+        </button>
       </div>
 
       <div
@@ -134,70 +222,93 @@ export default function Messages() {
 
         {messageStore.map((message, index) => (
           <div key={message._id}>
-              {message.source.email === email ? (
-                <div style={{display:'flex', justifyContent:'flex-end'}}>
+            {message.source.email === "server@server.server" ? (
+              <div style={{ display: "flex", justifyContent: "center" }}>
                 <div
                   style={{
                     // maxWidth: "60%",
                     // minWidth: "20%",
-                    width:'fit-content',
-                    backgroundColor: "#D8EC87",
+                    width: "fit-content",
+                    borderStyle: "dashed",
+                    borderWidth: 1,
                     padding: 10,
                     margin: 5,
                     borderRadius: 5,
+                    color: "purple",
+                    justifySelf: "center",
                     // marginLeft: "80%",
                   }}
                 >
-                  {message.type === "text" ? (
-                    <>{message.bytes}</>
-                  ) : (
-                    <img
-                      src={message.url}
-                      alt={`${message.url}`}
+                  {message.bytes}
+                </div>
+              </div>
+            ) : (
+              <div>
+                {message.source.email === email ? (
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <div
                       style={{
-                        display: "block",
-                        // height: "200px",
-                        maxWidth:"300px",
-                        objectFit: "contain",
+                        // maxWidth: "60%",
+                        // minWidth: "20%",
+                        width: "fit-content",
+                        backgroundColor: "#D8EC87",
+                        padding: 10,
+                        margin: 5,
+                        borderRadius: 5,
+                        // marginLeft: "80%",
                       }}
-                    />
-                  )}
-                </div>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    // maxWidth: "60%",
-                    // minWidth: "20%",
-                    width:'fit-content',
-                    backgroundColor: "lightgrey",
-                    padding: 10,
-                    margin: 5,
-                    borderRadius: 5,
-                    justifySelf:'flex-end'
-                  }}
-                >
-                  <div>
-                    {message.source.email} :{" "}
-                    {message.type === "text" ? (
-                      <>{message.bytes}</>
-                    ) : (
-                      <img
-                        src={message.url}
-                        alt={`${message.url}`}
-                        style={{
-                          display: "block",
-                          // height: "200px",
-                          maxWidth:"300px",
-                          objectFit: "contain",
-                          // marginLeft:"20%"
-                        }}
-                      />
-                    )}
+                    >
+                      {message.type === "text" ? (
+                        <>{message.bytes}</>
+                      ) : (
+                        <img
+                          src={message.url}
+                          alt={`${message.url}`}
+                          style={{
+                            display: "block",
+                            // height: "200px",
+                            maxWidth: "300px",
+                            objectFit: "contain",
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
-            
+                ) : (
+                  <div
+                    style={{
+                      // maxWidth: "60%",
+                      // minWidth: "20%",
+                      width: "fit-content",
+                      backgroundColor: "lightgrey",
+                      padding: 10,
+                      margin: 5,
+                      borderRadius: 5,
+                      justifySelf: "flex-end",
+                    }}
+                  >
+                    <div>
+                      {message.source.email} :{" "}
+                      {message.type === "text" ? (
+                        <>{message.bytes}</>
+                      ) : (
+                        <img
+                          src={message.url}
+                          alt={`${message.url}`}
+                          style={{
+                            display: "block",
+                            // height: "200px",
+                            maxWidth: "300px",
+                            objectFit: "contain",
+                            // marginLeft:"20%"
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             {/* <span>{message.bytes}</span> */}
           </div>
         ))}
@@ -220,11 +331,11 @@ export default function Messages() {
           style={{ maxWidth: "80%", borderRadius: 5, flexGrow: 1 }}
         />
         <button
-        style={{
+          style={{
             textAlign: "center",
             alignSelf: "center",
             color: "grey",
-            backgroundColor: image!=null ? "black" :"#F5D0A9",
+            backgroundColor: image != null ? "black" : "#F5D0A9",
             fontSize: 18,
             padding: 10,
             borderRadius: 10,
@@ -232,17 +343,16 @@ export default function Messages() {
             flexGrow: 1,
             maxWidth: "20%",
           }}
-
-          onClick={()=>{
+          onClick={() => {
             const imageInput = document.getElementById("image");
             imageInput.click();
           }}
         >
-        Image
+          Image
         </button>
         <input
           type="file"
-          style={{display:"none"}}
+          style={{ display: "none" }}
           id="image"
           accept="image/png, image/jpeg"
           onChange={(e) => {

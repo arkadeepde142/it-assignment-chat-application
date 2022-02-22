@@ -7,11 +7,11 @@ import CreateRoom from "./CreateRoom";
 
 function Chat() {
   const auth = useAuth()[0];
-
+  console.log(auth);
   return auth ? (
     <SocketProvider token={auth.token}>
       <Routes>
-        <Route exact path="/rooms" element={<Rooms />} />
+        <Route exact path="/rooms" element={(() =>{console.log("Reload");return <Rooms />})()} />
         <Route exact path="/messages" element={<Messages />} />
         <Route exact path="/createroom" element={<CreateRoom />} />
       </Routes>

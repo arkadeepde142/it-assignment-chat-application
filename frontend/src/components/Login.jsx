@@ -30,11 +30,11 @@ function Login() {
           </div>
           <div style={{ marginRight: '4.5%' }}>
             <label htmlFor="email">email : </label>
-            <input type="text" id="email"></input>
+            <input type="email" id="email"></input>
           </div>
           <div style={{ marginTop: 10 }}>
             <label htmlFor="password">password : </label>
-            <input type="text" id="password"></input>
+            <input type="password" id="password"></input>
           </div>
           <div style={{ marginTop: 20, marginRight: '21%' }}>
             <button
@@ -81,11 +81,11 @@ function Login() {
           </div>
           <div style={{ margin: 15 }}>
             <label htmlFor="email_signup">email : </label>
-            <input type="text" id="email_signup"></input>
+            <input type="email" id="email_signup"></input>
           </div>
           <div style={{ margin: 15 }}>
             <label htmlFor="password_signup">password : </label>
-            <input type="text" id="password_signup"></input>
+            <input type="password" id="password_signup"></input>
           </div>
 
           <div style={{ margin: 15 }}>

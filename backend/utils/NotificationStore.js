@@ -19,17 +19,20 @@ class NotificationStore extends EventEmitter {
   }
 
   on(event, cb) {
-    super.on(event, (id) => {
+    super.on(event, (id, ...args) => {
+      id = id.toString();
+      // console.log(typeof id)
       if (this._idSocketMap.has(id)) {
-        cb(this._idSocketMap.get(id));
+        cb(this._idSocketMap.get(id), ...args);
       }
     });
   }
 
   off(event, cb) {
-    super.off(event, (id) => {
+    super.off(event, (id, ...args) => {
+      id = id.toString();
       if (this._idSocketMap.has(id)) {
-        cb(this._idSocketMap.get(key));
+        cb(this._idSocketMap.get(id), ...args);
       }
     });
   }

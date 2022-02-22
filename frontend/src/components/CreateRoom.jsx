@@ -5,7 +5,7 @@ import useAuth from "../hooks/useAuth";
 export default function CreateRoom() {
   const [participants, setParticipants] = useState([]);
   const [error, setError] = useState("");
-  const { token } = useAuth()[0];
+  const { email, token } = useAuth()[0];
   const navigate = useNavigate();
   return (
     <div
@@ -29,6 +29,9 @@ export default function CreateRoom() {
           <h2 style={{ color: "white", textAlign: "center"}}>
             Messenger
           </h2>
+          <h4 style={{ color: "lavender", textAlign: "center"}}>
+            {email}
+          </h4>
         </div>
       <div style={{ backgroundColor:'#F7D358', borderRadius:15, padding:20}}>
           <h2 style={{textAlign:'center'}}>Create New Room</h2>
