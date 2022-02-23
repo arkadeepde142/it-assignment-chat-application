@@ -1,0 +1,22 @@
+{
+  "name": "assignment2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "start": "node backend/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arkadeepde142/it-assignment-chat-application.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arkadeepde142/it-assignment-chat-application/issues"
+  },
+  "homepage": "https://github.com/arkadeepde142/it-assignment-chat-application#readme"
+}

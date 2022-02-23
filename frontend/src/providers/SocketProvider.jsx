@@ -4,7 +4,7 @@ import io from "socket.io-client";
 export default function SocketProvider({children, token}) {
   const [socket,setSocket] = useState(null);
   useEffect(() => {
-    const newSocket = io(`http://127.0.0.1:8000`, {
+    const newSocket = io('/', {
       withCredentials: true,
       extraHeaders: {
         Authorization: `Bearer ${token}`,

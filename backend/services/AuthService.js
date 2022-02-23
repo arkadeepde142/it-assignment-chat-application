@@ -54,3 +54,5 @@ export async function signup(email, firstName, lastName, password) {
     throw new Error("Duplicate Email");
   }
 }
+
+

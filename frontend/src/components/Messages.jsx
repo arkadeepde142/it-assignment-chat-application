@@ -64,7 +64,7 @@ export default function Messages() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:8000/message/", {
+      const response = await fetch("/api/message/", {
         method: "POST",
         mode: "cors",
         headers: {
@@ -142,7 +142,7 @@ export default function Messages() {
               maxWidth: "30%",
             }}
             onClick={async () => {
-              const response = await fetch("http://localhost:8000/room", {
+              const response = await fetch("/api/room", {
                 method: "PUT",
                 mode: "cors",
                 headers: {
@@ -154,6 +154,9 @@ export default function Messages() {
                   email: document.getElementById("email").value,
                 }),
               });
+              if (!response.ok) {
+                console.error(await response.json());
+              }
             }}
           >
             Add participant
@@ -174,7 +177,7 @@ export default function Messages() {
             maxWidth: "30%",
           }}
           onClick={async () => {
-            const response = await fetch("http://localhost:8000/room", {
+            const response = await fetch("/api/room", {
               method: "DELETE",
               mode: "cors",
               headers: {
@@ -185,6 +188,7 @@ export default function Messages() {
                 roomId: room._id,
               }),
             });
+            if (!response.ok) console.error(await response.json());
           }}
         >
           Leave Room

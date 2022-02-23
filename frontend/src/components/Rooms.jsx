@@ -19,7 +19,7 @@ export default function Rooms() {
   useEffect(() => {
     (async () => {
       console.log("Fetch");
-      const response = await fetch("http://localhost:8000/room", {
+      const response = await fetch("/api/room", {
         method: "GET",
         mode: "cors",
         headers: {
@@ -29,8 +29,7 @@ export default function Rooms() {
       });
       const { rooms } = await response.json();
       const map = new Map();
-      for(const room of rooms)
-      {
+      for (const room of rooms) {
         map.set(room._id, room);
       }
       setRoomStore(map);
