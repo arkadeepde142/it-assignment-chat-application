@@ -8,6 +8,9 @@
     "build": "cd frontend && npm run build",
     "start": "node backend/index.js"
   },
+  "engines": {
+    "node": "16.14.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arkadeepde142/it-assignment-chat-application.git"
